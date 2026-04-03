@@ -95,3 +95,13 @@ export const communityApi = {
   getComments: (postId: string, params?: { page?: number; page_size?: number }) =>
     api.get(`/community/posts/${postId}/comments`, { params }),
 }
+
+// 用户管理API
+export const userApi = {
+  list: (params?: { page?: number; page_size?: number }) =>
+    api.get('/users', { params }),
+  get: (id: string) => api.get(`/users/${id}`),
+  create: (data: any) => api.post('/users', data),
+  update: (id: string, data: any) => api.patch(`/users/${id}`, data),
+  delete: (id: string) => api.delete(`/users/${id}`),
+}

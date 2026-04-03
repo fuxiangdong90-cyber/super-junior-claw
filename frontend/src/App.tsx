@@ -4,6 +4,7 @@ import { Layout } from 'antd'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Tasks from './pages/Tasks'
+import TaskDetail from './pages/TaskDetail'
 import Assets from './pages/Assets'
 import Resources from './pages/Resources'
 import Community from './pages/Community'
@@ -28,6 +29,7 @@ function AppContent() {
           <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" />} />
           <Route path="/" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />
           <Route path="/tasks" element={isAuthenticated ? <Tasks /> : <Navigate to="/login" />} />
+          <Route path="/tasks/:id" element={isAuthenticated ? <TaskDetail /> : <Navigate to="/login" />} />
           <Route path="/assets" element={isAuthenticated ? <Assets /> : <Navigate to="/login" />} />
           <Route path="/resources" element={isAuthenticated ? <Resources /> : <Navigate to="/login" />} />
           <Route path="/community" element={isAuthenticated ? <Community /> : <Navigate to="/login" />} />
