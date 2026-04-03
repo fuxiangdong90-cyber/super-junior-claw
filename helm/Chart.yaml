@@ -1,0 +1,30 @@
+# AI Validation Platform Helm Chart
+
+apiVersion: v2
+name: ai-validation-platform
+description: 人工智能软硬件验证平台
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: postgresql
+    version: 12.x.x
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled
+  - name: redis
+    version: 17.x.x
+    repository: https://charts.bitnami.com/bitnami
+    condition: redis.enabled
+  - name: rabbitmq
+    version: 11.x.x
+    repository: https://charts.bitnami.com/bitnami
+    condition: rabbitmq.enabled
+  - name: minio
+    version: 11.x.x
+    repository: https://charts.bitnami.com/bitnami
+    condition: minio.enabled
+
+maintainers:
+  - name: AI Validation Team
+    email: team@aivalidation.cn

@@ -71,3 +71,27 @@ export const resourceApi = {
   get: (id: string) => api.get(`/resources/${id}`),
   create: (data: any) => api.post('/resources', data),
 }
+
+// 计费API
+export const billingApi = {
+  getBalance: () => api.get('/billing/balance'),
+  getOrders: (params?: { page?: number; page_size?: number }) =>
+    api.get('/billing/orders', { params }),
+  recharge: (data: { amount: number; payment_method: string }) =>
+    api.post('/billing/recharge', data),
+  getInvoices: (params?: { page?: number; page_size?: number }) =>
+    api.get('/billing/invoices', { params }),
+  getPrices: () => api.get('/billing/prices'),
+}
+
+// 社区API
+export const communityApi = {
+  getPosts: (params?: { page?: number; page_size?: number; category?: string; tag?: string }) =>
+    api.get('/community/posts', { params }),
+  getPost: (id: string) => api.get(`/community/posts/${id}`),
+  createPost: (data: any) => api.post('/community/posts', data),
+  getCategories: () => api.get('/community/categories'),
+  getTags: () => api.get('/community/tags'),
+  getComments: (postId: string, params?: { page?: number; page_size?: number }) =>
+    api.get(`/community/posts/${postId}/comments`, { params }),
+}

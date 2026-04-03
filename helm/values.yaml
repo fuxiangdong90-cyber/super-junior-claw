@@ -1,0 +1,133 @@
+# 默认配置
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  storageClass: ""
+
+# 命名空间
+namespace: ai-validation
+
+# 后端配置
+backend:
+  enabled: true
+  replicaCount: 2
+  
+  image:
+    repository: ai-validation-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  
+  service:
+    type: ClusterIP
+    port: 8000
+  
+  ingress:
+    enabled: true
+    className: nginx
+    hostname: api.aivalidation.cn
+    tls: true
+  
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  
+  env:
+    - name: POSTGRES_HOST
+      value: postgresql
+    - name: REDIS_HOST
+      value: redis
+    - name: CELERY_BROKER_URL
+      value: amqp://guest:guest@rabbitmq:5672
+
+# 前端配置
+frontend:
+  enabled: true
+  replicaCount: 2
+  
+  image:
+    repository: ai-validation-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  
+  service:
+    type: ClusterIP
+    port: 80
+  
+  ingress:
+    enabled: true
+    className: nginx
+    hostname: www.aivalidation.cn
+    tls: true
+
+# PostgreSQL配置
+postgresql:
+  enabled: true
+  auth:
+    username: postgres
+    password: changeme
+    database: ai_validation
+  primary:
+    persistence:
+      size: 10Gi
+
+# Redis配置
+redis:
+  enabled: true
+  auth:
+    password: changeme
+
+# RabbitMQ配置
+rabbitmq:
+  enabled: true
+  auth:
+    username: guest
+    password: guest
+
+# MinIO配置 (对象存储)
+minio:
+  enabled: true
+  auth:
+    rootUser: minioadmin
+    rootPassword: minioadmin
+  persistence:
+    size: 20Gi
+
+# 监控配置
+monitoring:
+  enabled: true
+  prometheus:
+    enabled: true
+  grafana:
+    enabled: true
+
+# 告警配置
+alerting:
+  enabled: true
+  email:
+    enabled: false
+    host: smtp.example.com
+    port: 587
+    from: alerts@aivalidation.cn
+    to: admin@aivalidation.cn
+
+# 弹性伸缩
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+# 证书管理
+certificates:
+  enabled: true
+  issuer: letsencrypt-prod
+
+# 备份配置
+backup:
+  enabled: false
+  schedule: "0 2 * * *"
+  retention: 7d
