@@ -1,6 +1,6 @@
 """API路由"""
 from fastapi import APIRouter
-from app.api import auth, tasks, assets, billing, community, system, users
+from app.api import auth, tasks, assets, billing, community, system, users, templates
 
 api_router = APIRouter()
 
@@ -10,4 +10,5 @@ api_router.include_router(tasks.router)
 api_router.include_router(assets.router)
 api_router.include_router(billing.router)
 api_router.include_router(community.router)
+api_router.include_router(templates.router)
 api_router.include_router(system.router)
