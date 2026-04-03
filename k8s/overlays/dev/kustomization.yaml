@@ -1,0 +1,29 @@
+# 开发环境覆盖配置
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: ai-validation
+
+bases:
+  - ../base
+
+patchesStrategicMerge:
+  - patch-backend.yaml
+  - patch-frontend.yaml
+
+commonLabels:
+  environment: dev
+
+configMapGenerator:
+  - name: app-config
+    literals:
+      - DEBUG=true
+      - LOG_LEVEL=debug
+      - ENVIRONMENT=development
+
+# 开发环境镜像 (使用本地构建的镜像)
+images:
+  - name: ai-validation-backend
+    newTag: dev-latest
+  - name: ai-validation-frontend
+    newTag: dev-latest

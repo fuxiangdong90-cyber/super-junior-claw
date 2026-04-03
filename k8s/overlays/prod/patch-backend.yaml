@@ -1,0 +1,23 @@
+# 后端生产环境补丁
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+        - name: backend
+          env:
+            - name: DEBUG
+              value: "false"
+            - name: LOG_LEVEL
+              value: "info"
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "1000m"
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
