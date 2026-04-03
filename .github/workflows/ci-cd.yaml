@@ -1,0 +1,96 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # 后端测试和构建
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        working-directory: ./backend
+        run: |
+          pip install -r requirements.txt
+          
+      - name: Run tests
+        working-directory: ./backend
+        run: |
+          pytest --cov=app tests/
+          
+      - name: Build Docker image
+        run: |
+          docker build -t ai-validation-backend:${{ github.sha }} ./backend
+
+  # 前端测试和构建
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: ./frontend/package-lock.json
+          
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm install
+        
+      - name: Run linter
+        working-directory: ./frontend
+        run: npm run lint
+        
+      - name: Build
+        working-directory: ./frontend
+        run: npm run build
+        
+      - name: Build Docker image
+        run: |
+          docker build -t ai-validation-frontend:${{ github.sha }} ./frontend
+
+  # 部署到K8s
+  deploy:
+    needs: [backend, frontend]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          
+      - name: Push backend image
+        run: |
+          docker tag ai-validation-backend:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/ai-validation-backend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/ai-validation-backend:latest
+          
+      - name: Push frontend image
+        run: |
+          docker tag ai-validation-frontend:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/ai-validation-frontend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/ai-validation-frontend:latest
+          
+      - name: Deploy to Kubernetes
+        uses: azure/k8s-set-context@v1
+        with:
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+          
+      - name: Deploy to cluster
+        run: |
+          kubectl set image deployment/backend backend=${{ secrets.DOCKER_USERNAME }}/ai-validation-backend:latest -n ai-validation
+          kubectl set image deployment/frontend frontend=${{ secrets.DOCKER_USERNAME }}/ai-validation-frontend:latest -n ai-validation
