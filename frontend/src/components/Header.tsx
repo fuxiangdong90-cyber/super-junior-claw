@@ -1,5 +1,5 @@
 import { Layout, Menu, Avatar, Dropdown, Space } from 'antd'
-import { UserOutlined, LogoutOutlined, DashboardOutlined, FileOutlined, ClusterOutlined, CloudServerOutlined, TeamOutlined, WalletOutlined } from '@ant-design/icons'
+import { UserOutlined, LogoutOutlined, DashboardOutlined, FileOutlined, ClusterOutlined, CloudServerOutlined, TeamOutlined, WalletOutlined, PlusOutlined } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 
@@ -12,6 +12,7 @@ export default function Header() {
 
   const menuItems = [
     { key: '/', icon: <DashboardOutlined />, label: '仪表盘' },
+    { key: '/tasks/create', icon: <PlusOutlined />, label: '创建任务' },
     { key: '/tasks', icon: <ClusterOutlined />, label: '评测任务' },
     { key: '/assets', icon: <FileOutlined />, label: '资产管理' },
     { key: '/resources', icon: <CloudServerOutlined />, label: '算力资源' },
