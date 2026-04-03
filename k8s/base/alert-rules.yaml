@@ -1,0 +1,109 @@
+# AI验证平台告警规则
+groups:
+  - name: ai-validation-backend
+    rules:
+      # 高错误率告警
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "后端错误率过高"
+          description: "后端5分钟内错误率超过5%"
+
+      # 响应时间过长
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "响应时间过长"
+          description: "P95响应时间超过5秒"
+
+      # CPU使用率过高
+      - alert: HighCPUUsage
+        expr: sum(rate(process_cpu_seconds_total[5m])) by (instance) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU使用率过高"
+          description: "CPU使用率超过80%"
+
+      # 内存使用率过高
+      - alert: HighMemoryUsage
+        expr: (process_resident_memory_bytes / process_max_memory_bytes) > 0.9
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "内存使用率过高"
+          description: "内存使用率超过90%"
+
+  - name: ai-validation-tasks
+    rules:
+      # 任务失败率过高
+      - alert: HighTaskFailureRate
+        expr: rate(evaluation_tasks_total{status="failed"}[10m]) > 0.1
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "任务失败率过高"
+          description: "10分钟内任务失败率超过10%"
+
+      # 任务排队过多
+      - alert: TaskQueueBacklog
+        expr: evaluation_tasks_total{status="queued"} > 100
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "任务堆积"
+          description: "排队任务超过100个"
+
+  - name: ai-validation-resources
+    rules:
+      # 资源不足
+      - alert: InsufficientResources
+        expr: sum(compute_resources{status="available"}) < 5
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "可用资源不足"
+          description: "可用资源少于5个"
+
+      # 资源离线
+      - alert: ResourceOffline
+        expr: compute_resources{status="offline"} > 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "资源离线"
+          description: "有资源处于离线状态"
+
+  - name: ai-validation-billing
+    rules:
+      # 余额不足
+      - alert: LowBalance
+        expr: tenant_balance < 10000  # 小于100元
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "余额不足"
+          description: "租户余额低于100元"
+
+      # 欠费
+      - alert: OverduePayment
+        expr: tenant_balance < 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "账户欠费"
+          description: "账户已欠费"

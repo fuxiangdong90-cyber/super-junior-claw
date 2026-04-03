@@ -11,6 +11,8 @@ resources:
   - redis.yaml
   - backend.yaml
   - frontend.yaml
+  - prometheus-config.yaml
+  - alert-rules.yaml
 
 commonLabels:
   app: ai-validation-platform
@@ -20,3 +22,11 @@ images:
     newTag: latest
   - name: ai-validation-frontend
     newTag: latest
+
+configMapGenerator:
+  - name: prometheus-config
+    files:
+      - prometheus.yml=prometheus-config.yaml
+  - name: alert-rules
+    files:
+      - alerts.yml=alert-rules.yaml
