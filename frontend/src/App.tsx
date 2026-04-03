@@ -7,6 +7,7 @@ import Tasks from './pages/Tasks'
 import Assets from './pages/Assets'
 import Resources from './pages/Resources'
 import Community from './pages/Community'
+import Billing from './pages/Billing'
 import Header from './components/Header'
 import { AuthProvider, useAuth } from './hooks/useAuth'
 
@@ -30,6 +31,7 @@ function AppContent() {
           <Route path="/assets" element={isAuthenticated ? <Assets /> : <Navigate to="/login" />} />
           <Route path="/resources" element={isAuthenticated ? <Resources /> : <Navigate to="/login" />} />
           <Route path="/community" element={isAuthenticated ? <Community /> : <Navigate to="/login" />} />
+          <Route path="/billing" element={isAuthenticated ? <Billing /> : <Navigate to="/login" />} />
         </Routes>
       </Content>
     </Layout>
